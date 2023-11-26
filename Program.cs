@@ -1,15 +1,13 @@
-using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
-using MongoDB.Driver;
+using HotChocolate.AspNetCore;
 using Mug.Extensions;
 using Mug.Query;
-using Mug.Services.CosmosDb;
-using Newtonsoft.Json;
+
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
 // Add services
+builder.Services.AddAzureAdB2CAuthentication(config);
 builder.Services.AddCosmosDbService(config);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -29,10 +27,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseHttpsRedirection();
 
 // Add routing
-app.MapGraphQL();
+app.MapGraphQL().RequireAuthorization();
+
+
 app.MapControllers();
 
 app.Run();
