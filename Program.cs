@@ -7,7 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
 // Add services
-builder.Services.AddAzureAdB2CAuthentication(config);
 builder.Services.AddCosmosDbService(config);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -33,7 +32,7 @@ app.UseAuthorization();
 app.UseHttpsRedirection();
 
 // Add routing
-app.MapGraphQL().RequireAuthorization();
+app.MapGraphQL();
 
 
 app.MapControllers();
