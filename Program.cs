@@ -2,11 +2,12 @@ using HotChocolate.AspNetCore;
 using Mug.Extensions;
 using Mug.Query;
 
-
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
 // Add services
+builder.Services.AddAzureSqlDbIdentityService(config);
+builder.Services.AddIdentityServices(config);
 builder.Services.AddCosmosDbService(config);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -32,9 +33,12 @@ app.UseAuthorization();
 app.UseHttpsRedirection();
 
 // Add routing
-app.MapGraphQL();
-
-
+app.MapGraphQL().WithOptions(new GraphQLServerOptions
+{
+    Tool = {
+        Enable = app.Environment.IsDevelopment()
+    }
+});
 app.MapControllers();
 
 app.Run();
