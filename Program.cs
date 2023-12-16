@@ -18,6 +18,21 @@ builder.Services
     .AddMongoDbFiltering("cosmos")
     .AddMongoDbSorting("cosmos");
 
+builder.Services.AddCors(options =>
+{
+    // Development CORS Policy
+    options.AddPolicy("DevelopmentCorsPolicy",
+        builder => builder.WithOrigins("http://localhost:5173")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod());
+
+    // Production CORS Policy
+    options.AddPolicy("ProductionCorsPolicy",
+        builder => builder.WithOrigins("https://www.novustoria.com", "https://novustoria.com")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod());
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -25,6 +40,11 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors("DevelopmentCorsPolicy");
+}
+else
+{
+    app.UseCors("ProductionCorsPolicy");
 }
 
 app.UseAuthentication();
