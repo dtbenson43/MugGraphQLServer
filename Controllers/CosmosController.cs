@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Mug.Services.CosmosDb;
@@ -8,16 +9,11 @@ namespace Mug.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CosmosController : ControllerBase
+    public class CosmosController(CosmosDbService cosmosDbService) : ControllerBase
     {
-        private readonly CosmosDbService _cosmosDbService;
+        private readonly CosmosDbService _cosmosDbService = cosmosDbService;
 
-        public CosmosController(CosmosDbService cosmosDbService)
-        {
-            _cosmosDbService = cosmosDbService;
-        }
-
-        [HttpGet("cosmostest")]
+        [HttpGet("cosmostest"), Authorize]
         public async Task<string> Get()
         {
             var collection = _cosmosDbService.Conversations;

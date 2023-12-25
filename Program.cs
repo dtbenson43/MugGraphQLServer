@@ -1,12 +1,18 @@
 using HotChocolate.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using Mug.Extensions;
+using Mug.Mutation;
 using Mug.Query;
+using System.Text;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
 // Add services
-builder.Services.AddAzureSqlDbIdentityService(config);
 builder.Services.AddIdentityServices(config);
 builder.Services.AddCosmosDbService(config);
 builder.Services.AddControllers();
@@ -14,6 +20,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services
     .AddGraphQLServer()
+    .AddAuthorization()
+    .AddMutationConventions(applyToAllMutations: true)
+    .AddMutationType<Mutation>()
     .AddQueryType<Query>()
     .AddMongoDbFiltering("cosmos")
     .AddMongoDbSorting("cosmos");
@@ -47,10 +56,12 @@ else
     app.UseCors("ProductionCorsPolicy");
 }
 
+app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseHttpsRedirection();
+app.MapIdentityApi<IdentityUser>();
 
 // Add routing
 app.MapGraphQL().WithOptions(new GraphQLServerOptions

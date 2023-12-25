@@ -1,4 +1,7 @@
-﻿namespace Mug.Query
+﻿using HotChocolate.Authorization;
+using System.Security.Claims;
+
+namespace Mug.Query
 {
     public record WeatherForecast(DateOnly Date, int TemperatureC, string Summary)
     {
@@ -20,6 +23,18 @@
                 Random.Shared.Next(-20, 55),
                 Summaries[Random.Shared.Next(Summaries.Length)]
             ));
+        }
+
+        [Authorize]
+        public string GetTest()
+        {
+            return "hello";
+        }
+
+        public string GetMe(ClaimsPrincipal claimsPrincipal)
+        {
+            var c = claimsPrincipal;
+            return "hello";
         }
     }
 }

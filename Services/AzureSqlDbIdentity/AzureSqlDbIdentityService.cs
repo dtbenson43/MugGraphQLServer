@@ -4,11 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Mug.Services.AzureSqlDbIdentity
 {
-    public class AzureSqlDbIdentityService : IdentityDbContext<IdentityUser>
+    public class AzureSqlDbIdentityService(DbContextOptions<AzureSqlDbIdentityService> options) : IdentityDbContext<IdentityUser>(options)
     {
-        public AzureSqlDbIdentityService(DbContextOptions<AzureSqlDbIdentityService> options)
-            : base(options)
-        {
-        }
     }
 }

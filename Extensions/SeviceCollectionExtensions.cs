@@ -20,29 +20,28 @@ namespace Mug.Extensions
             return services;
         }
 
-        public static void AddAzureSqlDbIdentityService(this IServiceCollection services, IConfiguration config)
+        public static void AddIdentityServices(this IServiceCollection services, IConfiguration config)
         {
-            var connectionString = config["AZURE_SQL_CONNECTIONSTRING"];
-
-            if (connectionString == null) throw new InvalidOperationException("AZURE_SQL_CONNECTIONSTRING not configured.");
+            var connectionString = config["AZURE_SQL_CONNECTIONSTRING"] ?? throw new InvalidOperationException("AZURE_SQL_CONNECTIONSTRING not configured.");
 
             // Add the DbContext using the connection string
             services.AddDbContext<AzureSqlDbIdentityService>(options =>
-                options.UseSqlServer(connectionString));
-        }
+                options.UseSqlServer(
+                    connectionString, 
+                    options => options.EnableRetryOnFailure()));
 
-        public static void AddIdentityServices(this IServiceCollection services, IConfiguration config)
-        {
+            // Add authorization
+            services.AddAuthorization();
+
             // Add Identity services
-            services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<AzureSqlDbIdentityService>()
-                .AddDefaultTokenProviders();
+            services.AddIdentityApiEndpoints<IdentityUser>()
+                .AddEntityFrameworkStores<AzureSqlDbIdentityService>();
 
             // Configure Identity options (optional)
-            services.Configure<IdentityOptions>(options =>
-            {
-                // Password settings, lockout settings, user settings, etc.
-            });
+            //services.Configure<IdentityOptions>(options =>
+            //{
+            //    // Password settings, lockout settings, user settings, etc.
+            //});
         }
     }
 }
