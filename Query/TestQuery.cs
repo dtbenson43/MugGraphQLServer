@@ -36,5 +36,10 @@ namespace Mug.Query
             var c = claimsPrincipal;
             return "hello";
         }
+
+        public string GetSimpleTest()
+        {
+            return "poopy";
+        }
     }
 }
