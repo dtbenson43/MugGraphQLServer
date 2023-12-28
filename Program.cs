@@ -27,6 +27,15 @@ builder.Services
     .AddMongoDbFiltering("cosmos")
     .AddMongoDbSorting("cosmos");
 
+if (!builder.Environment.IsDevelopment())
+{
+    builder.Services.ConfigureApplicationCookie(options =>
+    {
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    });
+}
+
 builder.Services.AddCors(options =>
 {
     // Development CORS Policy
