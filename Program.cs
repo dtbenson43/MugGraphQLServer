@@ -13,7 +13,16 @@ var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
 // Add services
-builder.Services.AddIdentityServices(config);
+// builder.Services.AddIdentityServices(config);
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.Authority = "https://dev-ot47ow6jywihs3t3.us.auth0.com/";
+    options.Audience = "www.novustoria.com";
+});
 builder.Services.AddCosmosDbService(config);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -27,14 +36,14 @@ builder.Services
     .AddMongoDbFiltering("cosmos")
     .AddMongoDbSorting("cosmos");
 
-if (!builder.Environment.IsDevelopment())
-{
-    builder.Services.ConfigureApplicationCookie(options =>
-    {
-        options.Cookie.SameSite = SameSiteMode.None;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    });
-}
+// if (!builder.Environment.IsDevelopment())
+// {
+//     builder.Services.ConfigureApplicationCookie(options =>
+//     {
+//         options.Cookie.SameSite = SameSiteMode.None;
+//         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+//     });
+// }
 
 builder.Services.AddCors(options =>
 {
@@ -71,7 +80,7 @@ else
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapIdentityApi<IdentityUser>();
+// app.MapIdentityApi<IdentityUser>();
 
 // Add routing
 app.MapGraphQL().WithOptions(new GraphQLServerOptions
