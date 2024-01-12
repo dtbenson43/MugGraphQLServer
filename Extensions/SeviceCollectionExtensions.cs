@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver.Core.Configuration;
 using Mug.Services.AzureSqlDbIdentity;
+using Mug.Services.AzureWebPubSub;
 using Mug.Services.CosmosDb;
 
 namespace Mug.Extensions
@@ -42,6 +44,17 @@ namespace Mug.Extensions
             //{
             //    // Password settings, lockout settings, user settings, etc.
             //});
+        }
+
+        public static void AddAzureWebPubSubService(this IServiceCollection services, IConfiguration config)
+        {
+            var endpoint = config["AZURE_WEBPUBSUB_ENDPOINT"];
+            var key = config["AZURE_WEBPUBSUB_KEY"];
+
+            if (endpoint == null) throw new InvalidOperationException("AZURE_WEBPUBSUB_ENDPOINT not configured.");
+            if (key == null) throw new InvalidOperationException("AZURE_WEBPUBSUB_KEY not configured.");
+
+            services.AddSingleton(new AzureWebPubSubService(endpoint, key));
         }
     }
 }

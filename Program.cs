@@ -8,6 +8,8 @@ using Mug.Query;
 using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using HotChocolate.Execution.Processing;
+using Mug.Subscription;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -24,14 +26,17 @@ builder.Services.AddAuthentication(options =>
     options.Audience = "www.novustoria.com";
 });
 builder.Services.AddCosmosDbService(config);
+builder.Services.AddAzureWebPubSubService(config);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services
     .AddGraphQLServer()
+    .AddInMemorySubscriptions()
     .AddAuthorization()
     .AddMutationConventions(applyToAllMutations: true)
     .AddMutationType<Mutation>()
+    .AddSubscriptionType<Subscription>()
     .AddQueryType<Query>()
     .AddMongoDbFiltering("cosmos")
     .AddMongoDbSorting("cosmos");
@@ -81,6 +86,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // app.MapIdentityApi<IdentityUser>();
+
+app.UseRouting();
+app.UseWebSockets();
 
 // Add routing
 app.MapGraphQL().WithOptions(new GraphQLServerOptions
