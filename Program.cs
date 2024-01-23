@@ -1,14 +1,8 @@
 using HotChocolate.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
 using Mug.Extensions;
 using Mug.Mutation;
 using Mug.Query;
-using System.Text;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using HotChocolate.Execution.Processing;
 using Mug.Subscription;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -82,13 +76,14 @@ else
     app.UseHttpsRedirection();
 }
 
-app.UseAuthentication();
-app.UseAuthorization();
 
 // app.MapIdentityApi<IdentityUser>();
 
 app.UseRouting();
 app.UseWebSockets();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Add routing
 app.MapGraphQL().WithOptions(new GraphQLServerOptions
