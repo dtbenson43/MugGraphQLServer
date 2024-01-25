@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 using Mug.Services.CosmosDb.Models;
+using Mug.Services.CosmosDb.Models.ChooseGame;
 
 namespace Mug.Services.CosmosDb
 {
@@ -27,5 +28,9 @@ namespace Mug.Services.CosmosDb
         public IMongoCollection<TestDocument> TestDocument() => StoreCollection<TestDocument>();
 
         public IMongoCollection<ConversationMessage> Conversations { get { return ConversationsCollection<ConversationMessage>(); } }
+
+        public IMongoCollection<ChooseGame> ChooseGames => _database.GetCollection<ChooseGame>("chooseGames");
+
+        public async Task AddChooseGameAsync(ChooseGame game) => await ChooseGames.InsertOneAsync(game);
     }
 }
