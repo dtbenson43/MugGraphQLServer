@@ -21,6 +21,7 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddCosmosDbService(config);
 builder.Services.AddAzureWebPubSubService(config);
+builder.Services.AddOpenAIAPIService(config);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

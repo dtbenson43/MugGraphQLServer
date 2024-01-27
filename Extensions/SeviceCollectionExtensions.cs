@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Driver.Core.Configuration;
 using Mug.Services.AzureSqlDbIdentity;
 using Mug.Services.AzureWebPubSub;
 using Mug.Services.CosmosDb;
+using Mug.Services.OpenAI;
 
 namespace Mug.Extensions
 {
@@ -29,7 +29,7 @@ namespace Mug.Extensions
             // Add the DbContext using the connection string
             services.AddDbContext<AzureSqlDbIdentityService>(options =>
                 options.UseSqlServer(
-                    connectionString, 
+                    connectionString,
                     options => options.EnableRetryOnFailure()));
 
             // Add authorization
@@ -55,6 +55,12 @@ namespace Mug.Extensions
             if (key == null) throw new InvalidOperationException("AZURE_WEBPUBSUB_KEY not configured.");
 
             services.AddSingleton(new AzureWebPubSubService(endpoint, key));
+        }
+
+        public static void AddOpenAIAPIService(this IServiceCollection services, IConfiguration config)
+        {
+            var key = config["OPENAI_KEY"] ?? throw new InvalidOperationException("OPENAI_KEY not configured.");
+            services.AddSingleton(new OpenAIService(key));
         }
     }
 }

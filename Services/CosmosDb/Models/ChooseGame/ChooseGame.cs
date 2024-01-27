@@ -15,6 +15,8 @@ namespace Mug.Services.CosmosDb.Models.ChooseGame
 
         public ChooseGameBranch CurrentBranch { get; set; } = null!;
 
+        public ChooseGameBranch InitialBranch { get; set; } = null!;
+        
         public ChooseGameBranch? PreviousBranch { get; set; }
 
         public List<ChooseGameBranch> Branches { get; set; } = null!;
