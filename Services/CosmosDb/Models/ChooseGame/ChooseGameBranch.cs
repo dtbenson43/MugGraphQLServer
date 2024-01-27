@@ -6,6 +6,8 @@ namespace Mug.Services.CosmosDb.Models.ChooseGame
     public class ChooseGameBranch
     {
         public string Id { get; set; } = null!;
+        
+        public DateTime CreatedAt { get; set; }
 
         public string Text { get; set; } = null!; 
 

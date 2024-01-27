@@ -12,7 +12,10 @@ namespace Mug.Mutation
             {
                 Id = Guid.NewGuid().ToString(), // Generate a new GUID for the game ID
                 UserId = userId,
-                Branches = new List<ChooseGameBranch>()
+                Title = "Alone In Space",
+                CreatedAt = DateTime.UtcNow,
+                LastAccessed = DateTime.UtcNow,
+                Branches = []
             };
 
             // Create an initial branch
@@ -20,6 +23,7 @@ namespace Mug.Mutation
             {
                 Id = Guid.NewGuid().ToString(), // Generate a new GUID for the branch ID
                 Text = "Initial branch text", // Placeholder text
+                CreatedAt = DateTime.Now,
                 FirstOption = new ChoiceOption {
                     Text = "First option text", // Placeholder text
                     NextBranchId = Guid.NewGuid().ToString(),   
