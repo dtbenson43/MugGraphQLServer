@@ -24,9 +24,9 @@ namespace Mug.Services.OpenAI
             var messages = CreateChooseGameChatMessages(game);
             ChatRequest chatRequest = new ChatRequest()
             {
-                Model = Model.GPT4_Turbo,
-                Temperature = 0.0,
-                MaxTokens = 500,
+                Model = "gpt-4-turbo-preview",
+                Temperature = 0.1,
+                MaxTokens = 4096,
                 ResponseFormat = ChatRequest.ResponseFormats.JsonObject,
                 Messages = messages
             };
@@ -64,33 +64,41 @@ namespace Mug.Services.OpenAI
                 "up with the next 'Text' (the next promprt for the user), 'FirstOption' " +
                 "(the first option a user can select) and 'SecondOption' (the second option " +
                 "a user can select). You always seem to know the perfect time for a dramatic " +
-                "scene and the perfect time for slower scene. You always output JSON in the " +
-                "form of { \"Text\": \"\", \"FirstOption\": \"\", \"SecondOption\":\"\" }"
+                "scene and the perfect time for slower scene. Be sure to properly develop the " +
+                "story and provide details of the settings plot and characters where appropriate. " +
+                "Pleae write at least a paragraph. You always output JSON in the form " +
+                "of { \"Text\": \"\", \"FirstOption\": \"\", \"SecondOption\":\"\" }\n"
+            ),
+                new(ChatMessageRole.System,
+                "The user is starting a new game. The game is titled \"Stranded In Space\". " +
+                "The narrative is about a small three person crew of a spacecraft on a colony mission. " +
+                "The colonists are in hypersleep and the crew must safely transport them to " +
+                "the destination planet. Unbeknownst to the crew a single elusive alien " +
+                "has infiltrated the spacecraft. The alien is extremely fast, aggressive " +
+                "and deadly. Create the inital branch."
             )
             };
 
             ChooseGameBranch? currentBranch = null;
-            if (game != null) currentBranch = ChooseGameUtilities.GetNextBranch(game, null);
-            if (currentBranch == null || game == null)
+            while (game != null && ChooseGameUtilities.GetNextBranch(game, currentBranch, out currentBranch))
             {
-                messages.Add(new(ChatMessageRole.User,
-                    "The user is starting a new game. The game is titled \"Stranded In Space\". " +
-                    "The narrative is about a small crew of a spacecraft on a colony mission. " +
-                    "The colonists are in hypersleep and the crew must safely transport them to " +
-                    "the destination planet. Unbeknownst to the crew a single elusive alien with " +
-                    "unknown abilities has infiltrated the spacecraft. Create the inital branch."
-                ));
-            } 
-            else
-            {
-                while (ChooseGameUtilities.GetNextBranch(game, currentBranch, out currentBranch))
-                {
-                    if (currentBranch == null) break;
-                    messages.Add(new(
-                        ChatMessageRole.User,
-                        $"{currentBranch.Text}\nUser Choice: {ChooseGameUtilities.GetUserChoice(currentBranch)?.Text ?? ""}")
-                    );
-                }
+                if (currentBranch == null) break;
+                messages.Add(new(
+                    ChatMessageRole.Assistant,
+                    $"\n{currentBranch.Text}" +
+                    $"\nOption one: {currentBranch.FirstOption.Text}" +
+                    $"\nOption two: {currentBranch.SecondOption.Text}")
+                );
+
+                var userChoice = ChooseGameUtilities.GetUserChoice(currentBranch);
+                var userChoiceOption = currentBranch.UserChoice;
+
+                if (userChoiceOption == null || userChoice == null)
+                    throw new Exception("User hasn't made a selection yet!");
+
+                messages.Add(new(
+                    ChatMessageRole.User,
+                    $"\nUser Choice: {userChoiceOption} - {userChoice.Text}"));
             }
             return [.. messages];
         }

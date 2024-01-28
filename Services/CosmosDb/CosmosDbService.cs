@@ -32,5 +32,15 @@ namespace Mug.Services.CosmosDb
         public IMongoCollection<ChooseGame> ChooseGames => _database.GetCollection<ChooseGame>("chooseGames");
 
         public async Task AddChooseGameAsync(ChooseGame game) => await ChooseGames.InsertOneAsync(game);
+
+        public async Task<ChooseGame> GetChooseGameByIdAsync(string id)
+        {
+            return await ChooseGames.Find(game => game.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task ReplaceChooseGameAsync(ChooseGame newGameData)
+        {
+            await ChooseGames.ReplaceOneAsync(game => game.Id == newGameData.Id, newGameData);
+        }
     }
 }

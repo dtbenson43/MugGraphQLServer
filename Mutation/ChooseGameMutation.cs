@@ -3,6 +3,7 @@ using Mug.Services.CosmosDb;
 using Mug.Services.OpenAI;
 using Mug.Services.OpenAI.Models;
 using HotChocolate.Authorization;
+using Mug.Utilities;
 
 namespace Mug.Mutation
 {
@@ -11,7 +12,7 @@ namespace Mug.Mutation
         [Authorize]
         public async Task<CreateNewGamePayload> CreateNewGame(string userId, [Service] CosmosDbService cosmos, [Service] OpenAIService openAI)
         {
-            CreateChooseGameBranchResponse branch = await openAI.CreateChooseGameBranch();
+            CreateChooseGameBranchResponse branchData = await openAI.CreateChooseGameBranch();
             // Create a new ChooseGame object
             var newGame = new ChooseGame
             {
@@ -27,15 +28,15 @@ namespace Mug.Mutation
             var initialBranch = new ChooseGameBranch
             {
                 Id = Guid.NewGuid().ToString(), // Generate a new GUID for the branch ID
-                Text = branch.Text,
+                Text = branchData.Text,
                 CreatedAt = DateTime.Now,
                 FirstOption = new ChoiceOption {
-                    Text = branch.FirstOption,
+                    Text = branchData.FirstOption,
                     NextBranchId = Guid.NewGuid().ToString(),
                 },
                 SecondOption = new ChoiceOption
                 {
-                    Text = branch.SecondOption,
+                    Text = branchData.SecondOption,
                     NextBranchId = Guid.NewGuid().ToString(),
                 },
             };
@@ -53,6 +54,59 @@ namespace Mug.Mutation
                 NewGame = newGame,
             };
         }
+
+        [Authorize]
+        public async Task<AddUserSelectionPayload> AddUserSelection(string gameId, string choiceId, [Service] CosmosDbService cosmos, [Service] OpenAIService openAI)
+        {
+            var game = await cosmos.GetChooseGameByIdAsync(gameId);
+            var currentBranch = game.CurrentBranch;
+            var userChoide = ChooseGameUtilities.GetUserChoiceOptionById(currentBranch, choiceId);
+            
+            currentBranch.UserChoice = userChoide;
+
+            if (game.InitialBranch.Id == currentBranch.Id) game.InitialBranch.UserChoice = userChoide;
+            else
+            {
+                var cur = ChooseGameUtilities.GetBranchById(game, currentBranch.Id);
+                if (cur == null) throw new Exception("Branch data malformed");
+                cur.UserChoice = userChoide;
+            }
+
+            var branchData = await openAI.CreateChooseGameBranch(game);
+            var newBranch = new ChooseGameBranch()
+            {
+                Id = choiceId, // Generate a new GUID for the branch ID
+                Text = branchData.Text,
+                CreatedAt = DateTime.Now,
+                FirstOption = new ChoiceOption
+                {
+                    Text = branchData.FirstOption,
+                    NextBranchId = Guid.NewGuid().ToString(),
+                },
+                SecondOption = new ChoiceOption
+                {
+                    Text = branchData.SecondOption,
+                    NextBranchId = Guid.NewGuid().ToString(),
+                },
+            };
+
+            game.CurrentBranch = newBranch;
+            game.PreviousBranch = currentBranch;
+            game.Branches.Add(newBranch);
+
+            await cosmos.ReplaceChooseGameAsync(game);
+
+            return new AddUserSelectionPayload
+            {
+                UpdatedGame = game,
+            };
+        }
+    }
+
+    public class AddUserSelectionPayload
+    {
+        public ChooseGame UpdatedGame { get; set; } = null!;
+
     }
 
     public class CreateNewGamePayload

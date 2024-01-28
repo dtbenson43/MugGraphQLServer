@@ -32,5 +32,28 @@ namespace Mug.Utilities
                 ? branch.FirstOption
                 : branch.SecondOption;
         }
+
+        public static ChoiceOption? GetOptionById(ChooseGameBranch branch, string id)
+        {
+            if (branch.FirstOption.NextBranchId == id) return branch.FirstOption;
+            if (branch.SecondOption.NextBranchId == id) return branch.SecondOption;
+            return null;
+        }
+
+        public static UserChoiceOption? GetUserChoiceOptionById(ChooseGameBranch branch, string id)
+        {
+            if (branch.FirstOption.NextBranchId == id) return UserChoiceOption.FirstOption;
+            if (branch.SecondOption.NextBranchId == id) return UserChoiceOption.SecondOption;
+            return null;
+        }
+
+        public static ChooseGameBranch? GetBranchById(ChooseGame game, string branchId)
+        {
+            foreach (var branch in game.Branches)
+            {
+                if (branch.Id == branchId) return branch;
+            }
+            return null;
+        }
     }
 }
