@@ -1,6 +1,6 @@
 ﻿namespace Mug.Services.OpenAI.Models
 {
-    public class CreateChooseGameBranchResponse
+    public class ChooseGameBranchData
     {
         public string Text { get; set; } = null!;
 

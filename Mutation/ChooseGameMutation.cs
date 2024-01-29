@@ -12,7 +12,7 @@ namespace Mug.Mutation
         [Authorize]
         public async Task<CreateNewGamePayload> CreateNewGame(string userId, [Service] CosmosDbService cosmos, [Service] OpenAIService openAI)
         {
-            CreateChooseGameBranchResponse branchData = await openAI.CreateChooseGameBranch();
+            ChooseGameBranchData branchData = await openAI.CreateChooseGameBranchAsync();
             // Create a new ChooseGame object
             var newGame = new ChooseGame
             {
@@ -72,7 +72,7 @@ namespace Mug.Mutation
                 cur.UserChoice = userChoide;
             }
 
-            var branchData = await openAI.CreateChooseGameBranch(game);
+            var branchData = await openAI.CreateChooseGameBranchAsync(game);
             var newBranch = new ChooseGameBranch()
             {
                 Id = choiceId, // Generate a new GUID for the branch ID
