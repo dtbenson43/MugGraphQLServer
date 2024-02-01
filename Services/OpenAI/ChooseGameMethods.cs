@@ -242,8 +242,8 @@ namespace Mug.Services.OpenAI
                 "established before delving into the main plot. Be mindful of " +
                 "the reader's perspective, revealing information, including " +
                 "danger, only when it becomes apparent in the story. The " +
-                "narrative output should be in JSON format, with fields " +
-                "for 'Text', 'FirstOption', and 'SecondOption'. The choices " +
+                "narrative output should be in JSON format, in the form of " +
+                "{ \"Text\": \"\", \"FirstOption\": \"\", \"SecondOption\":\"\" }. The choices " +
                 "should be interactive, meaningful, and reflect the consequences " +
                 "of past player decisions. Avoid summaries and generalizations. " +
                 "Keep the narrative immediate and immersive, allowing players " +
