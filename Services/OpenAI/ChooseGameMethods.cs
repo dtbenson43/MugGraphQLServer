@@ -21,12 +21,13 @@ namespace Mug.Services.OpenAI
             "colonists on board in hyper sleep. The crew's " +
             "objective is to get the colonists to the destination planet unharmed. The ship is " +
             "very distant from any other ship or habitable planet. The crew has been travelling " +
-            "for quite some time and some crew members are on edge and often confrontational and " +
-            "this trait of the crew often appears when they're under stress. " +
-            "Unbeknownst to the crew, a deadly alien life form has infiltrated the spacecraft. The alien " +
-            "is very fast, very aggressive and very cunning. The alien, while intelligent, " +
-            "cannot interact with electronics. The alien can not be contained " +
-            "or reasoned with.";
+            "for quite some time and some crew members are on edge and often confrontational " +
+            "Unbeknownst to the crew, a deadly alien predator has infiltrated the spacecraft.\n" +
+            "ALIEN: 1.The alien is very fast, very aggressive and very cunning.\n" +
+            "2. The alien will ATTACK any animal or person on sight.\n" +
+            "3. The alien can NOT be contained in ANY WAY.\n" +
+            "4. Any attempt to communicate with the alien enrages it.\n" +
+            "5. The alien NEVER retreats.";
 
         /*
          *                 "1. You are an experienced writer/director and you will be writing " +
