@@ -27,6 +27,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services
     .AddGraphQLServer()
+    .ModifyRequestOptions(o =>
+    {
+        o.ExecutionTimeout = TimeSpan.FromMinutes(3);
+    })
     .AddInMemorySubscriptions()
     .AddAuthorization()
     .AddMutationConventions(applyToAllMutations: true)
