@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 using Mug.Services.CosmosDb.Models;
+using Mug.Services.CosmosDb.Models.Chat;
 using Mug.Services.CosmosDb.Models.ChooseGame;
 
 namespace Mug.Services.CosmosDb
@@ -31,6 +32,9 @@ namespace Mug.Services.CosmosDb
 
         public IMongoCollection<ChooseGame> ChooseGames => _database.GetCollection<ChooseGame>("chooseGames");
 
+        public IMongoCollection<ChatMessage> Chat => _database.GetCollection<ChatMessage>("chat");
+
+
         public async Task AddChooseGameAsync(ChooseGame game) => await ChooseGames.InsertOneAsync(game);
 
         public async Task<ChooseGame> GetChooseGameByIdAsync(string id)
@@ -42,5 +46,7 @@ namespace Mug.Services.CosmosDb
         {
             await ChooseGames.ReplaceOneAsync(game => game.Id == newGameData.Id, newGameData);
         }
+
+        public async Task AddChatMessageAsync(ChatMessage message) => await Chat.InsertOneAsync(message);
     }
 }
