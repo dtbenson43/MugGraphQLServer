@@ -60,7 +60,7 @@ builder.Services.AddCors(options =>
 
     // Production CORS Policy
     options.AddPolicy("ProductionCorsPolicy",
-        builder => builder.WithOrigins("https://www.novustoria.com", "https://novustoria.com", "http://localhost:4280")
+        builder => builder.WithOrigins("https://www.novustoria.com", "https://novustoria.com")
                           .AllowCredentials()
                           .AllowAnyHeader()
                           .AllowAnyMethod());
@@ -78,7 +78,7 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseCors("ProductionCorsPolicy");
-    //app.UseHttpsRedirection();
+    app.UseHttpsRedirection();
 }
 
 
