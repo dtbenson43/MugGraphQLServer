@@ -60,7 +60,7 @@ builder.Services.AddCors(options =>
 
     // Production CORS Policy
     options.AddPolicy("ProductionCorsPolicy",
-        builder => builder.WithOrigins("https://www.novustoria.com", "https://novustoria.com")
+        builder => builder.WithOrigins("https://www.novustoria.com", "https://novustoria.com", http://localhost:4280)
                           .AllowCredentials()
                           .AllowAnyHeader()
                           .AllowAnyMethod());
