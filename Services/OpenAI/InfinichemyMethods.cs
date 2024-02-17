@@ -19,7 +19,7 @@ namespace Mug.Services.OpenAI
         {
             ChatRequest chatRequest = new ChatRequest()
             {
-                Model = "gpt-4-turbo-preview",
+                Model = "gpt-3.5-turbo-1106",
                 TopP = 1,
                 Temperature = 0,
                 MaxTokens = 4096,
