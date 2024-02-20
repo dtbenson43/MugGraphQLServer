@@ -35,6 +35,10 @@ namespace Mug.Services.CosmosDb
 
         public IMongoCollection<CombinationResult> Infinichemy => _database.GetCollection<CombinationResult>("infinichemy");
 
+        public IMongoCollection<InfElement> InfElements => _database.GetCollection<InfElement>("infElements");
+
+        public IMongoCollection<InfCombination> InfCombinations => _database.GetCollection<InfCombination>("infCombinations");
+
 
         public IMongoCollection<ChatMessage> Chat => _database.GetCollection<ChatMessage>("chat");
 
@@ -70,6 +74,33 @@ namespace Mug.Services.CosmosDb
             else
             {
                 throw new InvalidOperationException("A result with the same hash already exists.");
+            }
+        }
+
+        public async Task<InfCombination> GetInfCombinationByIdAsync(string id) => await InfCombinations.Find(com => com.CombinationId == id).FirstOrDefaultAsync();
+        public async Task AddInfCombination(InfCombination com)
+        {
+            var existingResult = await GetInfCombinationByIdAsync(com.CombinationId);
+            if (existingResult == null)
+            {
+                await InfCombinations.InsertOneAsync(com);
+            }
+            else
+            {
+                throw new InvalidOperationException("A combination with the same id already exists.");
+            }
+        }
+        public async Task<InfElement> GetInfElementByIdAsync(string id) => await InfElements.Find(elm => elm.ElementId == id).FirstOrDefaultAsync();
+        public async Task AddInfElement(InfElement elm)
+        {
+            var existingResult = await GetInfElementByIdAsync(elm.ElementId);
+            if (existingResult == null)
+            {
+                await InfElements.InsertOneAsync(elm);
+            }
+            else
+            {
+                throw new InvalidOperationException("An element with the same id already exists.");
             }
         }
     }

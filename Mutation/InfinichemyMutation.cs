@@ -53,6 +53,61 @@ namespace Mug.Mutation
             };
         }
 
+        public async Task<CreateInfCombinationPayload> CreateInfCombinationAsync(string one, string two, [Service] CosmosDbService cosmos, [Service] OpenAIService openai)
+        {
+            var trimmedOne = Regex.Replace(one, @"\s+", "");
+            var trimmedTwo = Regex.Replace(two, @"\s+", "");
+
+            string[] elements = { trimmedOne, trimmedTwo };
+            Array.Sort(elements);
+
+            var id = string.Join("", elements);
+
+            InfCombination com = await cosmos.GetInfCombinationByIdAsync(id);
+            if (com == null)
+            {
+                var newElmData = await openai.GetInfCombination(one, two);
+                var newElmId = Regex.Replace(newElmData.Result, @"\s+", "");
+
+                var newCom = new InfCombination()
+                {
+                    CombinationId = id,
+                    ElementOne = one,
+                    ElementTwo = two,
+                    ResultElement = newElmData.Result,
+                    ResultElementId = newElmId
+                };
+
+                var newElm = new InfElement()
+                {
+                    ElementId = newElmId,
+                    Name = newElmData.Result,
+                    Emoji = newElmData.Emoji
+                };
+
+                await Task.WhenAll(
+                    cosmos.AddInfCombination(newCom),
+                    Task.Run(async () => {
+                        try
+                        {
+                            await cosmos.AddInfElement(newElm);
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            // do nothing element already exists
+                        }
+                    })
+                );
+
+                com = newCom;
+            }
+
+            return new CreateInfCombinationPayload()
+            {
+                InfCombination = com
+            };
+        }
+
         [GraphQLIgnore]
         private static string CreateHash(string input)
         {
@@ -75,5 +130,10 @@ namespace Mug.Mutation
     public class GetCombinationPayload
     {
         public CombinationResult CombinationResult { get; set; } = null!;
+    }
+
+    public class CreateInfCombinationPayload
+    {
+        public InfCombination InfCombination { get; set; } = null!;
     }
 }

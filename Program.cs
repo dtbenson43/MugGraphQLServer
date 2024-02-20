@@ -4,6 +4,7 @@ using Mug.Extensions;
 using Mug.Mutation;
 using Mug.Query;
 using Mug.Subscription;
+using Mug.TypeExtensions;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -37,6 +38,7 @@ builder.Services
     .AddMutationType<Mutation>()
     .AddSubscriptionType<Subscription>()
     .AddQueryType<Query>()
+    .AddTypeExtension<InfCombinationExtensions>()
     .AddMongoDbFiltering("cosmos")
     .AddMongoDbSorting("cosmos");
 
